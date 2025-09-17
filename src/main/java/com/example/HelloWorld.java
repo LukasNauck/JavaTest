@@ -11,16 +11,8 @@ public class HelloWorld {
      * @param args command line arguments (not used)
      */
     public static void main(String[] args) {
-        System.out.println("Hello World");
+        System.out.println("Hello Wogjfjfgrld");
     }
     
-    /**
-     * Method to get the greeting message.
-     * This is useful for testing purposes.
-     * 
-     * @return the greeting message
-     */
-    public String getGreeting() {
-        return "Hello World";
-    }
+
 }
