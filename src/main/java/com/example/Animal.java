@@ -1,7 +1,8 @@
 package com.example;
+
 import java.util.Random;
 
-public abstract class Animal{
+public abstract class Animal implements Comparable<Animal> {
     String animalType;
     int weight;
     int startingWeightMax;
@@ -18,27 +19,29 @@ public abstract class Animal{
         this.animalType = animalType;
     }
 
-    public int generateStartingWeight(){
+    public int generateStartingWeight() {
         Random random = new Random();
         return random.nextInt(startingWeightMax - startingWeightMin) + startingWeightMin;
     }
 
-    public void eat(){
+    public void eat() {
         Random random = new Random();
         weight = weight + random.nextInt(weightGainMax - weightGainMin) + weightGainMin;
-        System.out.println("The animal ate something.");
     }
 
-    public int getWeight(){
+    public int getWeight() {
         return weight;
     }
 
     public abstract void makeSound();
 
-    public String getAnimalType(){
+    public String getAnimalType() {
         return this.animalType;
     }
 
-
+    @Override
+    public int compareTo(Animal other) {
+        return this.animalType.compareTo(other.animalType);
+    }
 
 }
