@@ -1,5 +1,6 @@
 package com.example;
 
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -168,8 +169,6 @@ public class ZooManagerTest {
      * 
      */
 
-
-
     @Test
     void onlySwimmingAnimalsLoseWeightWhenSwimming() {
         ZooManager zoomanager = new ZooManager();
@@ -185,26 +184,26 @@ public class ZooManagerTest {
         int dolphinPreviousWeight;
         int eagleCurrentWeight;
         int eaglePreviousWeight;
-        
-        //Speichere die Gewichte (Previous)
+
+        // Speichere die Gewichte (Previous)
         animals = zoomanager.getAnimals();
         dolphinPreviousWeight = animals.get(0).weight;
         eaglePreviousWeight = animals.get(1).weight;
         fishPreviousWeight = animals.get(2).weight;
 
-        //Alle Wassertiere schwimmen
+        // Alle Wassertiere schwimmen
         swimmingAnimals = zoomanager.getSwimmingAnimals();
         swimmingAnimals.forEach(SwimmingAnimal::swim);
         swimmingAnimals.forEach(animal -> animal.swim());
         swimmingAnimals.forEach(a -> a.swim());
 
-
-/* *
-        for (int i = 0; i < swimmingAnimals.size(); i++) {
-            swimmingAnimals.get(i).swim();
-        }
-*/
-        dolphinCurrentWeight =  animals.get(0).weight;
+        /*
+         * *
+         * for (int i = 0; i < swimmingAnimals.size(); i++) {
+         * swimmingAnimals.get(i).swim();
+         * }
+         */
+        dolphinCurrentWeight = animals.get(0).weight;
         eagleCurrentWeight = animals.get(1).weight;
         fishCurrentWeight = animals.get(2).weight;
 
@@ -212,7 +211,6 @@ public class ZooManagerTest {
         assertTrue(dolphinPreviousWeight > dolphinCurrentWeight);
         assertTrue(eaglePreviousWeight == eagleCurrentWeight);
 
-        
     }
 
     @Test
@@ -222,7 +220,8 @@ public class ZooManagerTest {
         List<ClimbingAnimal> climbingAnimals = new LinkedList<>();
 
         ZooManager zoomanager = new ZooManager();
-        // 2x Bat/1x Ape/1 Dolphin/ 1 Fish/3 Bear/1 Eagle ==> 3Flying/2Swimming/4Climbing
+        // 2x Bat/1x Ape/1 Dolphin/ 1 Fish/3 Bear/1 Eagle ==>
+        // 3Flying/2Swimming/4Climbing
         zoomanager.createApe();
         zoomanager.createDolphin();
         zoomanager.createBear();
@@ -243,31 +242,94 @@ public class ZooManagerTest {
 
         assertTrue(flyingAnimals.size() == 3);
 
-
         assertTrue(climbingAnimals.size() == 4);
 
     }
-    
+
     @Test
-    void onlyClimbingAnimalsCanclimb(){
-        
+    void onlyClimbingAnimalsCanclimb() {
+
         Dolphin dolphin = new Dolphin();
-        assertThrows(Exception.class, () -> ((ClimbingAnimal) dolphin).climb());
+        assertThrows(Exception.class, () -> {
+            ((ClimbingAnimal) dolphin).climb();
+        });
+    }
+
+    @Test
+    void SumOfAllAnimalWeightsTest(){
+    //Sum should be between 6000 (inclusive) and 7800 (inclusive) when 3 Bears are created.
+        int sum = 0;
+        ZooManager zooManager = new ZooManager();
+        zooManager.createBear();
+        zooManager.createBear();
+        zooManager.createBear();
+
+        sum = zooManager.getSumOfAllAnimalWeights();
+
+        assertTrue(sum>=6000 && sum<=7800);
+
+    //Sum should be exactly 60 when 3 Fish are created.
+        sum = 0;
+        ZooManager zooManager2 = new ZooManager();
+        zooManager2.createFish();
+        zooManager2.createFish();
+        zooManager2.createFish();
+
+        sum = zooManager2.getSumOfAllAnimalWeights();
+
+        assertEquals(60,sum);
+    }
+
+    @Test
+    void SumOfAllAnimalWeightsWithStreamsTest(){
+        int sum = 0;
+        ZooManager zooManager = new ZooManager();
+        zooManager.createFish();
+        zooManager.createFish();
+        zooManager.createFish();
+
+        sum = zooManager.getSumOfAllAnimalWeightsUsingStreams();
+
+        assertEquals(60,sum);
     }
     
-    
-        // Legt von Jeder Tierart 3 Stück an.
-        // Hohlen uns eine Tierart raus
-        // Prüfe ob nur erwartete Tiere zurückgegeben werden
-        // Alle Tiere einer Art sollen ihre Kategoriespezifische Methode aufrufen
-        // Prüfe, ob nur diese Tiere aus der Art an Gewicht verloren haben.
+    @Test
+    void getAnimalsByTypeTest(){
+        ZooManager zooManager = new ZooManager();
+        zooManager.createApe();
+        zooManager.createBat();
+        zooManager.createBear();
 
-        
-        
-        
-        
-        
-        
-        // assertThrows(UnsupportedOperationException.class, () -> dolphin.climb());
+        List<ClimbingAnimal> climbingAnimals = zooManager.getAnimalsByType(ClimbingAnimal.class);
+        assertFalse(climbingAnimals.get(0) instanceof Bat);
+        assertFalse(climbingAnimals.get(1) instanceof Bat);
+        assertTrue(climbingAnimals.get(0) instanceof Ape);
+        assertTrue(climbingAnimals.get(1) instanceof Bear);
+        assertEquals(2,climbingAnimals.size());
+    }
 
+    @Test
+    void CreateAnimalByTypeTest(){
+        List<Animal> animals = new LinkedList<>();
+        ZooManager zooManager = new ZooManager();
+        zooManager.createAnimal(Ape.class);
+        animals = zooManager.getAnimals();
+
+        assertTrue(animals.get(0) instanceof Ape);
+        assertTrue(animals.size() == 1);
+        assertTrue(true == true);
+
+
+
+
+    }
+
+
+    /*
+     * Manager soll die Möglichkeit bieten, die Summe des Gewichts aller Tiere
+     * abzufragen (Über alle Tiere und nach Kategorie)
+     * Die 3 GetMethoden zu einer allgemeinen umbauen
+     * Die Create Methoden zu einer allgemeinen umbauen
+     * Stream filter sum collect in Verbindung mit Listen nachschlagen
+     */
 }

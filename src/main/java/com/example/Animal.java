@@ -10,7 +10,8 @@ public abstract class Animal implements Comparable<Animal> {
     int weightGainMin;
     int weightGainMax;
 
-    public Animal(int startingWeightMin, int startingWeightMax, int weightGainMin, int weightGainMax, String animalType) {
+    public Animal(int startingWeightMin, int startingWeightMax, int weightGainMin, int weightGainMax,
+            String animalType) {
         this.startingWeightMin = startingWeightMin;
         this.startingWeightMax = startingWeightMax;
         this.weightGainMin = weightGainMin;
@@ -20,8 +21,12 @@ public abstract class Animal implements Comparable<Animal> {
     }
 
     public int generateStartingWeight() {
-        Random random = new Random();
-        return random.nextInt(startingWeightMax - startingWeightMin) + startingWeightMin;
+        if (startingWeightMax == startingWeightMin) {
+            return startingWeightMin;
+        } else {
+            Random random = new Random();
+            return random.nextInt(startingWeightMax - startingWeightMin) + startingWeightMin;
+        }
     }
 
     public void eat() {

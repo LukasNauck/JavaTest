@@ -2,6 +2,8 @@ package com.example;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 public class ZooManager {
     private List<Animal> animals = new LinkedList();
@@ -32,9 +34,15 @@ public class ZooManager {
         sortedInsert(newfish);
     }
 
-        public void createBat() {
+    public void createBat() {
         Bat newBat = new Bat();
         sortedInsert(newBat);
+    }
+
+    public void CreateAnimalByType(){
+
+
+
     }
 
     public Animal getAnimalByIndex(int index) {
@@ -90,9 +98,8 @@ public class ZooManager {
         }
     }
 
-    //Kategorien
-
-    public List<SwimmingAnimal> getSwimmingAnimals() {      //Was passiert bei List<Animal>?/Was sind Vor&Nachteile von dieser Variante?
+    // Kategorien
+    public List<SwimmingAnimal> getSwimmingAnimals() { 
         List<SwimmingAnimal> swimmingAnimals = new LinkedList<>();
 
         for (int i = 0; i < animals.size(); i++) {
@@ -103,35 +110,39 @@ public class ZooManager {
         return List.copyOf(swimmingAnimals);
     }
 
-    public List<FlyingAnimal> getFlyingAnimals() {      
-        List<FlyingAnimal> flyingAnimals = new LinkedList<>();
-
-        for (int i = 0; i < animals.size(); i++) {
-            if (getAnimalByIndex(i) instanceof FlyingAnimal) {
-                flyingAnimals.add((FlyingAnimal) getAnimalByIndex(i));
-            }
-        }
-        return List.copyOf(flyingAnimals);
+    public List<FlyingAnimal> getFlyingAnimals() {
+        return animals.stream()
+        .filter(animal -> animal instanceof FlyingAnimal) 
+        .map(FlyingAnimal.class::cast)        
+        .collect(Collectors.toUnmodifiableList());  
     }
 
+    public List<ClimbingAnimal> getClimbingAnimals() {
+    return animals.stream()
+        .filter(animal -> animal instanceof ClimbingAnimal) 
+        .map(ClimbingAnimal.class::cast)      //Konvertiere animal zu Climbing animal                
+        .collect(Collectors.toUnmodifiableList());           
+}
 
-    public List<ClimbingAnimal> getClimbingAnimals() {      
-        List<ClimbingAnimal> climbingAnimals = new LinkedList<>();
+    public <T> List<T> getAnimalsByType(Class<T> targetClass) {
+    return animals.stream()
+        .filter(targetClass::isInstance) 
+        .map(targetClass::cast)         
+        .collect(Collectors.toUnmodifiableList());
+}
 
-        for (int i = 0; i < animals.size(); i++) {
-            if (getAnimalByIndex(i) instanceof ClimbingAnimal) {
-                climbingAnimals.add((ClimbingAnimal) getAnimalByIndex(i));
-            }
+    public int getSumOfAllAnimalWeights() {
+        int totalWeight = 0;
+        for (Animal animal : animals) { // Kann man das auch mit -> lösen?
+            totalWeight += animal.getWeight();
         }
-        return List.copyOf(climbingAnimals);
+        return totalWeight;
     }
 
-    
-
-
-    
-
-
-
+    public int getSumOfAllAnimalWeightsUsingStreams() {
+        return animals.stream()
+                .mapToInt(animal -> animal.getWeight())
+                .sum();
+    }
 
 }
