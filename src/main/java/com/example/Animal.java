@@ -2,7 +2,7 @@ package com.example;
 
 import java.util.Random;
 
-public abstract class Animal implements Comparable<Animal> {
+public abstract class Animal implements Comparable<Animal>,java.io.Serializable {
     String animalType;
     int weight;
     int startingWeightMax;
