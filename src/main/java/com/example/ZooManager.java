@@ -26,7 +26,7 @@ public class ZooManager {
         serializer.saveAnimals(this.animals);
     }
 
-    // Tiere erstellen
+    // Create Animals
     public void createApe() {
         Ape newApe = new Ape();
         sortedInsert(newApe);

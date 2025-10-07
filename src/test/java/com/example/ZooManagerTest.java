@@ -1,38 +1,29 @@
 
 package com.example;
 
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.LinkedList;
 import java.util.List;
 
+@ExtendWith(MockitoExtension.class) 
 public class ZooManagerTest {
 
-    // Ensures the Zoo starts empty and does not have data from a previous test that
-    // could influence it.
-    /*
-     * @BeforeEach
-     * void setup() {
-     * ZooManager setupZooManager = new ZooManager();
-     * setupZooManager.clearAllAnimals();
-     * setupZooManager.saveState();
-     * setupZooManager = null;
-     * }
-     */
-    
-    // 1. Declare fields for the test instance
+    //gefälschtes Objekt (Mock) des Interfaces ZooStateSerializer erstellen.
+    @Mock
+    private ZooStateSerializer serializerMock;
+    //echte Instanz der Klasse ZooManager
+    @InjectMocks 
     private ZooManager zooManager;
-    private InMemoryZooSerializer testSerializer;
-
- 
-    @BeforeEach
-    void setup() {
-        // Create a fresh in-memory serializer
-        testSerializer = new InMemoryZooSerializer();
-        zooManager = new ZooManager(testSerializer);
-    }
 
     @Test
     void createApeTest() {
@@ -44,7 +35,7 @@ public class ZooManagerTest {
         assertTrue(zooManager.getAnimals().get(0).getAnimalType() == "Ape");
 
     }
-
+    
     @Test
     void createDolphinTest() {
         //ZooManager zooManager = new ZooManager();
@@ -206,12 +197,6 @@ public class ZooManagerTest {
         swimmingAnimals.forEach(animal -> animal.swim());
         swimmingAnimals.forEach(a -> a.swim());
 
-        /*
-         * *
-         * for (int i = 0; i < swimmingAnimals.size(); i++) {
-         * swimmingAnimals.get(i).swim();
-         * }
-         */
         dolphinCurrentWeight = animals.get(0).weight;
         eagleCurrentWeight = animals.get(1).weight;
         fishCurrentWeight = animals.get(2).weight;
@@ -279,8 +264,7 @@ public class ZooManagerTest {
         assertTrue(sum >= 6000 && sum <= 7800);
 
         // Sum should be exactly 60 when 3 Fish are created.
-        InMemoryZooSerializer freshSerializer = new InMemoryZooSerializer();
-        ZooManager zooManager2 = new ZooManager(freshSerializer);
+        ZooManager zooManager2 = new ZooManager(serializerMock);
 
         sum = 0;
         zooManager2.createFish();
@@ -364,7 +348,7 @@ public class ZooManagerTest {
 
         assertTrue(animals.size() == 0);
     }
-
+/* 
     @Test
     void savingAndLoadingAnimals() {
         InMemoryZooSerializer testSerializer = new InMemoryZooSerializer();
@@ -386,30 +370,25 @@ public class ZooManagerTest {
 
         assertEquals(2, animals.size()); // There are now only the animals that got saved (2 Apes)
     }
-
+    */
     @Test
-    void shouldSaveAndLoadStateUsingInterface() {
-        // 1. Arrange: Create the in-memory serializer stub
-        InMemoryZooSerializer testSerializer = new InMemoryZooSerializer();
+    void savingAndLoadingAnimals() {        
+    List<Animal> expectedSavedList = new LinkedList<>();
+    
+    zooManager.createApe();
+    zooManager.createApe();
+    //Save
+    expectedSavedList = zooManager.getAnimals(); 
+    zooManager.saveAnimals(); 
 
-        // 2. Arrange: Inject the stub into the first ZooManager
-        ZooManager manager1 = new ZooManager(testSerializer);
-        manager1.createBear();
-        manager1.createDolphin();
+    verify(serializerMock, times(1)).saveAnimals(expectedSavedList);
+    //Animal that won't get saved
+    zooManager.createBat(); 
+    assertEquals(3, zooManager.getAnimals().size());
+    //Restart/Load
+    when(serializerMock.loadAnimals()).thenReturn(expectedSavedList); 
+    ZooManager restartedManager = new ZooManager(serializerMock); 
 
-        assertEquals(2, manager1.getAnimals().size(), "Manager 1 should have 2 animals.");
-
-        // 3. Act: Save the state (via the injected stub)
-        manager1.saveAnimals();
-
-        // 4. Act: Create a second manager, injecting the SAME stub
-        ZooManager manager2 = new ZooManager(testSerializer);
-
-        // 5. Assert: Check that the second manager loaded the state from the stub's
-        // storage
-        List<Animal> loadedAnimals = manager2.getAnimals();
-        assertEquals(2, loadedAnimals.size(), "Manager 2 should have loaded 2 animals.");
-        assertTrue(loadedAnimals.stream().anyMatch(a -> a instanceof Bear));
-        assertTrue(loadedAnimals.stream().anyMatch(a -> a instanceof Dolphin));
+    assertEquals(2, restartedManager.getAnimals().size());
     }
 }

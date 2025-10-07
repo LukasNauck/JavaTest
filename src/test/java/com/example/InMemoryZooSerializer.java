@@ -1,3 +1,4 @@
+/*
 package com.example;
 
 import java.util.LinkedList;
@@ -23,3 +24,4 @@ public class InMemoryZooSerializer implements ZooStateSerializer {
         this.storage.clear();
     }
 }
+*/
